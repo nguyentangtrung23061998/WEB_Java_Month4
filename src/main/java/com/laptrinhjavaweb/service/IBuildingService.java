@@ -1,9 +1,11 @@
 package com.laptrinhjavaweb.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.laptrinhjavaweb.DTO.BuildingDTO;
 import com.laptrinhjavaweb.entity.BuildingEntity;
+import com.laptrinhjavaweb.paging.Pageble;
 
 public interface IBuildingService {
 	BuildingDTO save(BuildingDTO newBuilding);
@@ -11,5 +13,6 @@ public interface IBuildingService {
 	void delete(BuildingDTO deleteBuilding);
 	
 	//nâng cao
-	List<BuildingEntity> searchID(BuildingDTO searchIDBuilding);
+	BuildingDTO searchID(Long id);
+	List<BuildingDTO> findAll(Map<String,Object> properties,Pageble pageble,Object...where);
 }

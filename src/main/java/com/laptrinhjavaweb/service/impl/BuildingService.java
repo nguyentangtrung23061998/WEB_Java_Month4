@@ -1,11 +1,14 @@
 package com.laptrinhjavaweb.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.laptrinhjavaweb.DTO.BuildingDTO;
 import com.laptrinhjavaweb.converter.BuildingConverter;
 import com.laptrinhjavaweb.entity.BuildingEntity;
+import com.laptrinhjavaweb.paging.Pageble;
 import com.laptrinhjavaweb.reponsitory.IBuildingResponsitory;
 import com.laptrinhjavaweb.responsitory.impl.BuildingResponsitory;
 import com.laptrinhjavaweb.service.IBuildingService;
@@ -39,14 +42,28 @@ public class BuildingService implements	IBuildingService{
 		// TODO Auto-generated method stub
 		BuildingConverter buildingConverter = new BuildingConverter();
 		BuildingEntity buildingEntity = buildingConverter.convertToEntity(deleteBuilding);
-		buildingResponsitory.delete(buildingEntity);
+	//	buildingResponsitory.delete(buildingEntity);
 	}
 
 	@Override
-	public List<BuildingEntity> searchID(BuildingDTO searchIDBuilding) {
+	public BuildingDTO searchID(Long id) {
+		BuildingEntity buildingSearch = buildingResponsitory.searchID(id);
 		BuildingConverter buildingConverter = new BuildingConverter();
-		BuildingEntity buildingEntity = buildingConverter.convertToEntity(searchIDBuilding);
-		return buildingResponsitory.searchID(buildingEntity);
+		BuildingDTO buildingDTO = buildingConverter.convertToDTO(buildingSearch);
+		return buildingDTO;
 	}
+
+	@Override
+	public List<BuildingDTO> findAll(Map<String,Object> properties,Pageble pageble,Object...where) {
+		BuildingConverter buildingConverter = new BuildingConverter();
+		List<BuildingEntity> buildingEntity =  buildingResponsitory.findAll(properties, pageble,where);
+		List<BuildingDTO> buildingDTOList = new ArrayList<>();
+		for(int i =0 ;i<buildingEntity.size();i++) {
+			BuildingDTO buildingDTO = buildingConverter.convertToDTO(buildingEntity.get(i));
+			buildingDTOList.add(buildingDTO);
+		}
+		return buildingDTOList;
+	}
+
 
 }
