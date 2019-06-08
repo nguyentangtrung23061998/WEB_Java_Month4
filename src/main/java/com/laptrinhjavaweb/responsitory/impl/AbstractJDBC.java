@@ -553,26 +553,27 @@ public class AbstractJDBC<T> implements GenericJDBC<T> {
 		Statement statement = null;
 		ResultSet resultSet = null;
 		ResultSetMapper<T> resultSetMapper = new ResultSetMapper<>();
+				
 		StringBuilder sql = createSQLfindAll(properties);
-
-		if(where != null && where.length >0) {
+		if(where != null && where.length > 0) {
 			sql.append(where[0]);
 		}
-		if(pageble !=null) {
+		
+		if(pageble!=null) {
 			if(pageble.getSorter() != null) {
-				Sorter sorter = pageble.getSorter();
+				Sorter sorter =pageble.getSorter();
 				sql.append(" ORDER BY "+sorter.getSortName()+" "+sorter.getSortBy()+"");
 			}
 			if(pageble.getOffset() != null && pageble.getLimit() != null) {
 				sql.append(" LIMIT " + pageble.getOffset()+", "+pageble.getLimit()+"");
 			}
 		}	
-		try {
-			conn=getConnection();
-			statement= conn.createStatement();
+	
+		try { 
+			conn = getConnection();
+			statement = conn.createStatement();
 			resultSet = statement.executeQuery(sql.toString());
-			
-			if(conn!=null) {
+			if (conn != null) {	
 				return resultSetMapper.mapRow(resultSet, this.zClass);
 			}
 		} catch (Exception e) {
@@ -596,31 +597,29 @@ public class AbstractJDBC<T> implements GenericJDBC<T> {
 	}
 
 	private StringBuilder createSQLfindAll(Map<String, Object> properties) {
-		String tableName="";
-		if(this.zClass.isAnnotationPresent(Table.class)) {
+		String tableName = "";
+		if(zClass.isAnnotationPresent(Table.class)) {
 			Table table = zClass.getAnnotation(Table.class);
 			tableName = table.name();
 		}
-		StringBuilder sql = new StringBuilder("select * from "+tableName+" where 1=1");
-		if(properties != null && properties.size()>0) {
-			//cấp params và values theo đối tượng phát động properties.size
+		StringBuilder result = new StringBuilder("select * from "+tableName+" where 1=1");
+		if(properties != null && properties.size() >0) {
 			String[] params = new String[properties.size()];
 			Object[] values = new Object[properties.size()];
 			int i=0;
-			for(Map.Entry<?, ?> item :properties.entrySet()) {
+			for(Map.Entry<?,?> item:properties.entrySet()) {
 				params[i] = (String) item.getKey();
-				values[i] = item.getValue();
+				values[i]=item.getValue();
 				i++;
 			}
-			for(int j= 0 ;j<params.length;j++) {
-				if(values[j] instanceof String) {
-				 sql.append(" and lower ("+params[j]+") like '%"+values[j]+"%'");
-				}
-				if(values[j] instanceof Integer) {
-					sql.append(" and "+params[j]+" = "+values[j]+"");
+			for(int i1=0;i1<params.length;i1++) {
+				if(values[i1] instanceof String) {
+					result.append(" and LOWER ("+params[i1]+") LIKE '%"+values[i1]+"%'");
+				}else if(values[i1] instanceof Integer) {
+					result.append(" and "+params[i1]+" = "+values[i1]+"");
 				}
 			}
 		}
-		return sql;
+		return result;
 	}
 }
